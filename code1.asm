@@ -91,9 +91,8 @@ draw_item
     clc
 .self_mod_1
     adc #0  ;#0 is a self-mod value
-    bcc .skip_nextG2
+    bcc *+4  ;skip high byte update line below
     inc $62
-.skip_nextG2
     sta $61
     iny
     cpy #5
@@ -138,9 +137,8 @@ common_sub5
     lda DATA_4+10,x
     adc $61
     sta $61
-    bcc .skip_nextK5
+    bcc *+4  ;skip high byte update line below
     inc $62
-.skip_nextK5         
     lda #31
     sta ($61),y
     inx
@@ -610,9 +608,8 @@ a_subG
     jsr common_sub6
     inc $61
     lda $61
-    bne .skip_nextY
+    bne *+4  ;skip high byte update line below
     inc $62
-.skip_nextY
     sta $67
     lda $62
     clc
@@ -676,9 +673,8 @@ common_sub3
     beq .skip_nextAK
     inc $6e
     and ($65),y
-    beq .skip_nextAL
+    beq *+4  ;skip high byte update line below
     inc $6f
-.skip_nextAL
     lda ($63),y
 .skip_nextAK
     ora ($65),y
@@ -705,10 +701,9 @@ common_sub3
     lda $61
     clc
     adc #22
-    bcc .skip_nextAO
+    bcc *+6  ;skip high byte update lines below
     inc $62
     inc $68
-.skip_nextAO
     sta $61
     sta $67
     lda $6f

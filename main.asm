@@ -16,6 +16,7 @@ _VICCR2      = $9002  ;36866
 _VICCR5      = $9005  ;36869
 _CASEURV     = $8400  ;33792 reversed characters MTV page 118
 
+;-----------------------------------------------------------------------------------
 player_lives = $76
 game_level = $77
 game_select_level = $78
@@ -23,6 +24,17 @@ play_sound = $73
 next_screen_offset = $71  ;used to point to the next screen
 score_hundreds = $74
 score_tens = $75
+
+;-----------------------------------------------------------------------------------
+;Colours
+black = 0
+white = 1
+red = 2
+cyan = 3
+purple = 4
+green = 5
+blue = 6
+yellow = 7
 
 ;-----------------------------------------------------------------------------------
 ;Allow the program to run on either an unexpanded or 8K+ expanded VIC20
@@ -54,7 +66,6 @@ score_tens = $75
 ;An extra 2 pages are needed because memory beyound the screen memory map is used
 !fill 512+47, $00  ;
 !source "code3.asm"  ;
-!source "code4.asm"
 
 extras_8k
     lda #240  ;254 = 1111 1110
@@ -77,7 +88,6 @@ extras_8k
 !source "spr.asm"
 
 !source "code3.asm"
-!source "code4.asm"
 
 * = $1c00
 !source "screen.asm"
