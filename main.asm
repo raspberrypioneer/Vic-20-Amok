@@ -71,7 +71,7 @@ extras_8k
     lda #240  ;254 = 1111 1110
     sta _VICCR5
     jsr title_screen_select_option
-    jmp extras_8k_done  ;will always branch because accumulator from subroutine is always zero
+    jmp extras_8k_done
 
 } else {
 

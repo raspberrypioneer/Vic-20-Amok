@@ -3,6 +3,12 @@ Amok game disassembly with build scripts for reassembly for the unexpanded and 8
 
 The 8K+ expanded version is the same as the unexpanded version except it works in the 8K+ expanded memory configuration.
 
+Amend `a_run.bat` by commenting / uncommenting the command to run either the unexpanded or 8K+ expanded version.
+
+![Amok](./docs/Amok-image.jpg)
+
+![Screen 1](./docs/Amok%20screen1.png)
+
 ## Disassembly notes
 1. Go to https://www.masswerk.at/6502/disassembler.html
 2. Choose load option to load PRG file
