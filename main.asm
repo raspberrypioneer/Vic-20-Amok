@@ -17,13 +17,22 @@ _VICCR5      = $9005  ;36869
 _CASEURV     = $8400  ;33792 reversed characters MTV page 118
 
 ;-----------------------------------------------------------------------------------
+;Zero page addresses
+
+screen_or_shadow_high = $60  ;holds screen or shadow screen high byte
+map_address_low = $61  ;screen position low byte
+map_address_high = $62  ;screen position high byte
+key_press = $69  ;key / joystick directions and fire
+next_screen_offset = $71  ;used to point to the next screen
+entrance_gate_position = $72  ;values are 0,1,2,3,255
+play_sound_duration = $73
+score_hundreds = $74
+score_tens = $75
 player_lives = $76
 game_level = $77
 game_select_level = $78
-play_sound = $73
-next_screen_offset = $71  ;used to point to the next screen
-score_hundreds = $74
-score_tens = $75
+one_jiffy = $a2
+game_speed = $a4  ;is a delay which depends on the level and screen (higher values are slower)
 
 ;-----------------------------------------------------------------------------------
 ;Colours
@@ -35,6 +44,26 @@ purple = 4
 green = 5
 blue = 6
 yellow = 7
+
+;Other
+screen_high_byte = 28  ;$1c
+shadow_screen_high_byte = 30  ;$1e
+screen_colour_map_offset = 120  ;screen to colour map offset (high byte)
+player_data_index = 168
+player_animate_up_down_offset = 80
+player_animate_left_offset = 32
+player_animate_right_offset = 56
+
+;Sprites
+bullet_character = 1
+robot_head1 = 24
+robot_tail1 = 25
+player_head1 = 26
+player_tail1 = 27
+wall_character = 28
+robot_head2 = 29
+robot_tail2 = 30
+gate_character = 31
 
 ;-----------------------------------------------------------------------------------
 ;Allow the program to run on either an unexpanded or 8K+ expanded VIC20
@@ -56,16 +85,16 @@ yellow = 7
 !source "spr.asm"
 
 ;Used to align low byte addresses so they're the same as the unexpanded layout
-!fill 208, $00  ;
+!fill 208, 0
 !source "code2.asm"
 
 * = $1c00
 !source "screen.asm"
 
 ;Used to align low byte addresses so they're the same as the unexpanded layout
-;An extra 2 pages are needed because memory beyound the screen memory map is used
-!fill 512+47, $00  ;
-!source "code3.asm"  ;
+;An extra 2 pages are needed because memory beyond the screen memory map is used
+!fill 512+47, 0
+!source "code3.asm"
 
 extras_8k
     lda #240  ;254 = 1111 1110

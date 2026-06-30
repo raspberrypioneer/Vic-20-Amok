@@ -1,6 +1,6 @@
 a_sub6
     ldy #0
-    lda $60
+    lda screen_or_shadow_high
     sta a_sub2+2
     lda #32
     sta $6f
@@ -47,94 +47,190 @@ update_custom_chars_from_reversed_set
     sta $70
 .charset_update_loop
     lda _CASEURV+384,x  ;Point to reversed charcater set
-    sta DATA_CUSTOM_CHAR+256,y  ;Apply to custom character set 
+    sta DATA_CUSTOM_CHAR_OTHER,y  ;Apply to custom character set 
     inx
     iny
     dec $70
     bne .charset_update_loop
     lda $6f
-a_sub2
+a_sub2  ;self-mod at +1 and +2
     sta _SCREEN_ADDR+513  ;Memory beyound the screen memory map is used (for unexpanded Vic is the standard screen map memory)
     inc $6f
     inc a_sub2+1
     rts
 
+;-----------------------------------------------------------------------------------
 screen_transition
-    lda #4
-    sta DATA_1+171
+    lda #purple
+    sta data_player_hero_colour
     lda #112
-    sta $a4
+    sta game_speed
     sta $a5
     sta _SOUND3
     sta _NOISE
     lda #8  ;black background and border
     sta _BACKGROUND_BORDER_COLOUR
-    lda $a2  ;jiffy real-time clock ($a2 is one jiffy)
+    lda one_jiffy  ;jiffy real-time clock ($a2 is one jiffy)
     adc #24
 .wait_24_jiffys
-    cmp $a2
+    cmp one_jiffy
     bne .wait_24_jiffys
     lda #30  ;white background, blue border
     sta _BACKGROUND_BORDER_COLOUR
     rts
 
-common_sub14
-    sta $70
-    lda DATA_3,y
-    asl
-    lda $60
+;-----------------------------------------------------------------------------------
+calc_map_address_using_A_for_col_and_Y_for_row
+    sta $70  ;column value
+    lda data_step_11,y  ;not sure why this is done as A is disgarded 2 lines later
+    asl  ;multiply by 2
+    lda screen_or_shadow_high
     adc #0
-    sta $62
-    lda DATA_3,y
-    asl
+    sta map_address_high
+    lda data_step_11,y
+    asl  ;multiply by 2, which gives a row start value (0, 22, 33, 44 etc)
     clc
-    adc $70
+    adc $70 ;column value
     bcc *+4  ;skip high byte update line below
-    inc $62
-    sta $61
+    inc map_address_high
+    sta map_address_low
     ldy #0
     rts
 
-common_sub6
-    lda DATA_1+1,x
+;-----------------------------------------------------------------------------------
+calc_map_address_for_thing_X
+    lda data_each_thing_row,x
     lsr
     lsr
     lsr
-    tay
-    lda DATA_1,x
+    tay  ;Y input for calculate map address
+
+    lda data_each_thing_col,x
     lsr
     lsr
     lsr
-    jsr common_sub14
+    jsr calc_map_address_using_A_for_col_and_Y_for_row
     rts
 
-;DATA_3 = $19e8 to $1a78 (6632 to 6776)
+;-----------------------------------------------------------------------------------
+;Data = $19e8 to $1a78 (6632 to 6776)
 ;18 x 8 = 144
-DATA_3
-    !byte $00, $0b, $16, $21, $2c, $37, $42, $4d
-    !byte $58, $63, $6e, $79, $84, $8f, $9a, $a5
-    !byte $b0, $bb, $c6, $d1, $dc, $e7, $f2, $fd
+;table for start of row, the looked up value is multiplied by 2, which gives a row start value (0, 22, 33, 44 etc)
+data_step_11
+    !byte 0, 11, 22, 33, 44, 55, 66, 77
+    !byte 88, 99, 110, 121, 132, 143, 154, 165
+    !byte 176, 187, 198, 209, 220, 231, 242, 253
 
-DATA_ROBOT_COLOURS
+data_player_animation
+data_robot_colours
     !byte green, cyan, red, black, $00, $00, $00, $00
     !byte $00, $00, $00, $00, $00, $00, $00, $00
 
-DATA_SOUNDS
+data_sounds
     !byte $00, $00, $e8, $ec, $f0, $f2, $f5, $f7
     !byte $f8, $f9, $f9, $f8, $f5, $f3, $f0, $ec
-DATA_3B
-    !byte $00, $30, $30, $10, $4e, $3a, $08, $08
-    !byte $15, $12, $08, $00, $00, $30, $30, $10
-    !byte $08, $2c, $1c, $08, $0c, $0a, $05, $00
-    !byte $00, $0c, $0c, $08, $10, $34, $38, $30
-    !byte $30, $50, $a0, $00, $00, $0c, $0c, $08
-    !byte $70, $50, $10, $10, $a8, $48, $10, $00
-    !byte $00, $08, $1c, $08, $3c, $2a, $0a, $14
-    !byte $16, $30, $00, $00, $00, $08, $1c, $08
-    !byte $1e, $2a, $28, $14, $34, $06, $00, $00
-    !byte $00, $08, $1c, $08, $1c, $2a, $2a, $08
-    !byte $14, $14, $14, $36, $00, $00, $00, $00
 
+;player animation position 32 move left 1
+    !byte %00000000
+    !byte %00110000
+    !byte %00110000
+    !byte %00010000
+    !byte %01001110
+    !byte %00111010
+    !byte %00001000
+    !byte %00001000
+    !byte %00010101
+    !byte %00010010
+    !byte %00001000
+    !byte %00000000
+
+;player animation position 44 move left 2
+    !byte %00000000
+    !byte %00110000
+    !byte %00110000
+    !byte %00010000
+    !byte %00001000
+    !byte %00101100
+    !byte %00011100
+    !byte %00001000
+    !byte %00001100
+    !byte %00001010
+    !byte %00000101
+    !byte %00000000
+
+;player animation position 56 move right 1
+    !byte %00000000
+    !byte %00001100
+    !byte %00001100
+    !byte %00001000
+    !byte %00010000
+    !byte %00110100
+    !byte %00111000
+    !byte %00110000
+    !byte %00110000
+    !byte %01010000
+    !byte %10100000
+    !byte %00000000
+
+;player animation position 68 move right 2
+    !byte %00000000
+    !byte %00001100
+    !byte %00001100
+    !byte %00001000
+    !byte %01110000
+    !byte %01010000
+    !byte %00010000
+    !byte %00010000
+    !byte %10101000
+    !byte %01001000
+    !byte %00010000
+    !byte %00000000
+
+;player animation position 80 move up-down 1
+    !byte %00000000
+    !byte %00001000
+    !byte %00011100
+    !byte %00001000
+    !byte %00111100
+    !byte %00101010
+    !byte %00001010
+    !byte %00010100
+    !byte %00010110
+    !byte %00110000
+    !byte %00000000
+    !byte %00000000
+
+;player animation position 92 move up-down 2
+    !byte %00000000
+    !byte %00001000
+    !byte %00011100
+    !byte %00001000
+    !byte %00011110
+    !byte %00101010
+    !byte %00101000
+    !byte %00010100
+    !byte %00110100
+    !byte %00000110
+    !byte %00000000
+    !byte %00000000
+
+;player animation position 104 standing
+    !byte %00000000
+    !byte %00001000
+    !byte %00011100
+    !byte %00001000
+    !byte %00011100
+    !byte %00101010
+    !byte %00101010
+    !byte %00001000
+    !byte %00010100
+    !byte %00010100
+    !byte %00010100
+    !byte %00110110
+
+    !byte $00, $00, $00, $00
+
+;-----------------------------------------------------------------------------------
 title_screen_select_option
     ldx #0
     lda #blue
@@ -154,67 +250,79 @@ title_screen_select_option
     bne .wait_f7_game_start_loop
 
     lda #0
-    sta next_screen_offset
-    sta $72
-    sta play_sound
+    sta next_screen_offset  ;next screen values 0, 16, 32, 48, 64
+    sta entrance_gate_position  ;values are 0,1,2,3,255
+    sta play_sound_duration
     sta score_hundreds
     sta score_tens
     rts
 
-;DATA_4 = $1a9f to $1af8 (6807 to 6904)
+;-----------------------------------------------------------------------------------
+;Data = $1a9f to $1af8 (6807 to 6904)
 ;12 x 8 = 96 +1 bytes
-DATA_4
-    !byte $00, $00, $00, $00, $f3, $60, $00, $00
-    !byte $00, $00, $dc, $16, $16, $00, $0a, $01
-    !byte $00, $00, $f1, $16, $16, $01, $ee, $01
-    !byte $00, $09, $53, $99, $54, $52, $0a, $52
-    !byte $a0, $00, $00, $00, $ff, $00, $ff, $00
-    !byte $ff, $00, $00, $01, $00, $01, $00, $01
-    !byte $00, $00, $01, $01, $01, $00, $ff, $00
-    !byte $00, $00, $00, $01, $01, $ff, $ff, $00
-    !byte $00, $00, $00, $00, $ff, $00, $00, $00
-    !byte $00, $00, $00, $09, $05, $08, $05, $08
-    !byte $00, $00, $00, $00, $08, $00, $00, $00
-    !byte $03, $00, $00, $08, $0e, $00, $00, $03
     !byte $00
+    !byte $00, $00, $00, $f3, $60, $00, $00, $00
+data_entrance_gate_high
+data_entrance_gate_low = data_entrance_gate_high+1
+    !byte $00, $dc, $16, $16
+    !byte $00, $0a, $01, $00
+    !byte $00, $f1, $16, $16
+    !byte $01, $ee, $01, $00
+data_player_start_col
+    !byte 9, 83, 153, 84
+data_player_start_row
+    !byte 82, 10, 82, 160
+data_robot_move_col
+    !byte $00, $00, $00, $ff, $00, $ff, $00, $ff
+    !byte $00, $00, $01, $00, $01, $00, $01, $00
+data_robot_move_row
+    !byte $00, $01, $01, $01, $00, $ff, $00, $00
+    !byte $00, $00, $01, $01, $ff, $ff, $00, $00
+data_bullet_start_col
+    !byte $00, $00, $00, $ff, $00, $00, $00, $00
+    !byte $00, $00, $09, $05, $08, $05, $08, $00
+data_bullet_start_row
+    !byte $00, $00, $00, $08, $00, $00, $00, $03
+    !byte $00, $00, $08, $0e, $00, $00, $03, $00
 
 a_subF
-    ldx #144
-    lda DATA_1,x
-    ora DATA_1+1,x
+.robot_index_2
+    ldx #144  ;self-mod index values 144, 152, 96, 104, 112, 120, 128, 136, 144, 152, then resets to 96
+    lda data_each_thing_col,x
+    ora data_each_thing_row,x
     and #7
     bne .end_routineH
-    lda DATA_1+3,x
-    cmp #7
-    beq .skip_nextCN
+    lda data_each_thing_colour,x
+    cmp #yellow
+    beq .robot_has_been_shot_goto_next_one
     lda #0
-    sta DATA_1+2,x
-.skip_nextCN
+    sta data_each_thing_status,x
+.robot_has_been_shot_goto_next_one
     dec $a5
-    beq .skip_nextCM
+    beq .skip_to_next_robot
 .end_routineH
     rts
 
-.skip_nextCM
+.skip_to_next_robot
     txa
     clc
     adc #8
     cmp #160
-    bne .skip_nextA1
+    bne .reset_robot_index_2
     lda #96
-.skip_nextA1
+.reset_robot_index_2
     tax
-    sta a_subF+1
-    lda DATA_1+3,x
-    cmp #7
-    bne .skip_nextA2
+    sta .robot_index_2+1
+    lda data_each_thing_colour,x
+    cmp #yellow
+    bne .robot_still_alive_continue
     lda game_level
     sta $a5
     rts
 
-.skip_nextA2
-    jsr common_sub11
-    lda $a2  ;jiffy real-time clock ($a2 is one jiffy)
+.robot_still_alive_continue
+    jsr common_subZ1
+    lda one_jiffy  ;jiffy real-time clock ($a2 is one jiffy)
     and #15
     bne .skip_nextA3
 .top_of_loop1
@@ -223,7 +331,7 @@ a_subF
     and #15
     sta $69
 .skip_nextA3
-    jsr common_sub6
+    jsr calc_map_address_for_thing_X
     sty $6f
     lda $69
     and #1
@@ -273,7 +381,7 @@ a_subF
     lda $6f
     bne .top_of_loop1
     lda $69
-    sta DATA_1+2,x
+    sta data_each_thing_status,x
     lda game_level
     sta $a5
     rts
@@ -281,33 +389,34 @@ a_subF
 !byte $00
 
 common_sub1
-    lda $62
+    lda map_address_high
     sta $64
-    tya
-    beq .end_routineI
-    bmi .skip_nextCK
+    tya  ;Y is added to map_address_low for $63 (low) and either increasing or decreasing $64 (high), dependent on Y value bit 7
+    beq .Y_is_zero_so_end
+    bmi .Y_bit_7_is_1
     clc
-    adc $61
+    adc map_address_low
     bcc *+4  ;skip high byte update line below
     inc $64
-    jmp .skip_nextCJ
+    jmp .check_calculated_address
 
-.skip_nextCK
+.Y_bit_7_is_1
     sec
-    adc $61
+    adc map_address_low
     bcs *+4  ;skip high byte update line below
     dec $64
-.skip_nextCJ
-    sta $63
+.check_calculated_address
+    sta $63  ;calculated address low byte (from map address and Y above)
     ldy #0
     lda ($63),y
     cmp #7
     bcc *+4  ;skip high byte update line below
     inc $6f
-.end_routineI
+.Y_is_zero_so_end
     lda $69
     rts
 
+;-----------------------------------------------------------------------------------
 select_level
     lda $cb  ;matrix coordinate of current key pressed, 64 if none
     cmp #39  ;f1 key

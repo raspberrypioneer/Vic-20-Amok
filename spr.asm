@@ -10,6 +10,7 @@ DATA_CUSTOM_CHAR
 !byte %00000000
 !byte %00000000
 
+;1 bullet character
 !byte %10000000
 !byte %00000000
 !byte %00000000
@@ -28,6 +29,7 @@ DATA_CUSTOM_CHAR
 !byte %00100100
 !byte %00100100
 
+DATA_CUSTOM_CHAR_UNKNOWN
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -217,6 +219,7 @@ DATA_CUSTOM_CHAR
 !byte %00000000
 !byte %00000000
 
+;24 robot character head 1
 !byte %00000000
 !byte %00011000
 !byte %00111100
@@ -226,6 +229,7 @@ DATA_CUSTOM_CHAR
 !byte %11111111
 !byte %10111101
 
+;25 robot character tail 1
 !byte %10111101
 !byte %10111101
 !byte %00111100
@@ -235,6 +239,8 @@ DATA_CUSTOM_CHAR
 !byte %00000000
 !byte %00000000
 
+DATA_CUSTOM_PLAYER_ONWARDS
+;26 player character head 1
 !byte %00000000
 !byte %00001000
 !byte %00011100
@@ -244,6 +250,7 @@ DATA_CUSTOM_CHAR
 !byte %00101010
 !byte %00001000
 
+;27 player character tail 1
 !byte %00010100
 !byte %00010100
 !byte %00010100
@@ -253,6 +260,7 @@ DATA_CUSTOM_CHAR
 !byte %00000000
 !byte %00000000
 
+;28 block character used for walls
 !byte %11111111
 !byte %11111111
 !byte %11111111
@@ -262,6 +270,7 @@ DATA_CUSTOM_CHAR
 !byte %11111111
 !byte %11111111
 
+;29 robot character head 2
 !byte %00000000
 !byte %00011000
 !byte %00111100
@@ -271,6 +280,7 @@ DATA_CUSTOM_CHAR
 !byte %11111111
 !byte %10111101
 
+;30 robot character tail 2
 !byte %10111101
 !byte %10111101
 !byte %00111100
@@ -280,6 +290,7 @@ DATA_CUSTOM_CHAR
 !byte %00000000
 !byte %00000000
 
+;31 gate character used for blocking entrance
 !byte %00000000
 !byte %01010100
 !byte %00101010
@@ -289,6 +300,7 @@ DATA_CUSTOM_CHAR
 !byte %00101010
 !byte %00000000
 
+DATA_CUSTOM_CHAR_OTHER
 !byte %00100000
 !byte %00110000
 !byte %00110000
