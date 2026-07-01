@@ -35,7 +35,7 @@ program_loop2
 .set_VICCR2_and_continue
     sta _VICCR2
     jsr play_sound_in_SOUND3
-    jsr game_action_with_speed_delay
+    jsr handle_robots_fire_bullets
     jmp check_if_need_to_switch_to_next_screen
 
 !byte $00,$00
@@ -142,12 +142,13 @@ clear_spaces
     jsr get_user_input
     jsr check_if_player_is_dead
     jsr update_data_for_robots_and_things
-    jsr a_subF
-    jsr a_sub6
+    jsr move_robots
+    jsr show_score_player_lives_on_top_row
     rts
 
 !byte $00,$00,$00,$00,$00,$00,$00,$00,$00
 
+;-----------------------------------------------------------------------------------
 .draw_entrance_close_gate
     ;X values are 0,4,8,12
     clc
@@ -161,6 +162,7 @@ clear_spaces
     inx
     rts
 
+;-----------------------------------------------------------------------------------
 ;Data = $1100 to $11b1 (4352 to 4529)
 ;256 bytes in this data block
 data_each_thing_col
@@ -367,7 +369,7 @@ handle_actions_for_robots_and_things
     rts
 
 .do_bullet_actions
-    jsr a_subG
+    jsr move_bullets
     jmp .skip_to_next_robot_or_thing
 
 ;-----------------------------------------------------------------------------------
@@ -448,6 +450,7 @@ animate_player_sprite
     bne .copy_12_player_sprite_chars_loop
     rts
 
+;-----------------------------------------------------------------------------------
 .handle_input_directions_and_fire_continued
     tya  ;direction from key / joystick
     sta key_press
@@ -566,7 +569,9 @@ fire_bullet_if_ok
 
 !byte $00
 
-a_subG
+;-----------------------------------------------------------------------------------
+;TODO: move_bullets
+move_bullets
     jsr calc_map_address_for_thing_X
     lda data_each_thing_character,x  ;with X is data_for_bullets_character
     asl
@@ -575,7 +580,7 @@ a_subG
     tay
     lda #0
     adc #24
-    sta .self_mod_8+2
+    sta .data_custom_char_high_byte+2
     cpx #176
     bcc .skip_nextAJ
     lda #8
@@ -593,35 +598,37 @@ a_subG
     eor #255
     sec
     adc #117
-    sta .self_mod_9+1
+    sta .jmp_to_low_byte+1
     stx $6c
     lda data_each_thing_col+6,x
     tax
+
     lda #0
-.skip_nextJ1
+.clear_data_custom_char_in_X_loop
     sta DATA_CUSTOM_CHAR,x
     inx
     dec $69
-    bne .skip_nextJ1
+    bne .clear_data_custom_char_in_X_loop
+
     ldx $6c
     lda data_each_thing_row,x
     and #7
     clc
     adc data_each_thing_col+6,x
     tax
-.skip_nextJ2
+.top_j2_loop
     lda #0
     sta $6b
-.self_mod_8
+.data_custom_char_high_byte
     lda DATA_CUSTOM_CHAR,y  ;self-mod (high byte)
     beq .skip_nextX
-.self_mod_9
-    jmp .jump_to9
+.jmp_to_low_byte
+    jmp .jmp_table  ;self-mod (low byte)
 
     lsr
     nop
     ror $6b
-.jump_to9
+.jmp_table
     lsr
     nop
     ror $6b
@@ -650,7 +657,8 @@ a_subG
     inx
     iny
     dec $6a
-    bne .skip_nextJ2
+    bne .top_j2_loop
+
     ldx $6c
     ldy #0
     lda #24
@@ -660,32 +668,33 @@ a_subG
     lda map_address_high
     clc
     adc #screen_colour_map_offset
-    sta $68  ;colour map high
+    sta colour_address_high
     lda map_address_low
-    sta $67  ;colour map low
-    jsr common_sub3
+    sta colour_address_low
+    jsr move_bullet
     cpx #176
     bcc .skip_nextZ
     rts
 
 .skip_nextZ
-    jsr common_sub3
-    jsr common_sub3
+    jsr move_bullet
+    jsr move_bullet
     jsr calc_map_address_for_thing_X
     inc map_address_low
     lda map_address_low
     bne *+4  ;skip high byte update line below
     inc map_address_high
-    sta $67  ;colour map low
+    sta colour_address_low
     lda map_address_high
     clc
     adc #screen_colour_map_offset
-    sta $68  ;colour map high
-    jsr common_sub3
-    jsr common_sub3
-    jsr common_sub3
+    sta colour_address_high
+    jsr move_bullet
+    jsr move_bullet
+    jsr move_bullet
     rts
 
+;-----------------------------------------------------------------------------------
 play_sound_in_SOUND3
     lda play_sound_duration
     beq .sound_duration_ending
@@ -722,7 +731,9 @@ add_100_to_score_change_level_reset_next_screen_value
     lda #0
     rts
 
-common_sub3         
+;-----------------------------------------------------------------------------------
+;TODO: move_bullet
+move_bullet         
     ldy #0
     sty $6e
     sty $6f
@@ -759,7 +770,7 @@ common_sub3
     lsr
     sta (map_address_low),y
     lda data_each_thing_colour,x
-    sta ($67),y
+    sta (colour_address_low),y
 .skip_nextAN
     lda $63
     clc
@@ -770,9 +781,9 @@ common_sub3
     adc #22
     bcc *+6  ;skip high byte update lines below
     inc map_address_high
-    inc $68
+    inc colour_address_high
     sta map_address_low
-    sta $67
+    sta colour_address_low
     lda $6f
     bne .skip_nextAP
     rts

@@ -1,16 +1,19 @@
-a_sub6
+;TODO: show_score_player_lives_on_top_row
+show_score_player_lives_on_top_row
     ldy #0
     lda screen_or_shadow_high
-    sta a_sub2+2
+    sta .plot_A_on_score_row+2  ;high byte for screen / shadow screen
     lda #32
     sta $6f
     lda #1
-    sta a_sub2+1
+    sta .plot_A_on_score_row+1  ;low byte for screen / shadow screen
+
     lda score_hundreds
     and #240
     lsr
     tax
     jsr update_custom_chars_from_reversed_set
+
     lda score_hundreds
     and #15
     asl
@@ -18,6 +21,7 @@ a_sub6
     asl
     tax
     jsr update_custom_chars_from_reversed_set
+
     lda score_tens
     and #240
     lsr
@@ -30,18 +34,19 @@ a_sub6
     asl
     tax
     jsr update_custom_chars_from_reversed_set
+
     lda #19
-    sta a_sub2+1
+    sta .plot_A_on_score_row+1  ;low byte for screen / shadow screen
     lda #36
     sta $6f
-    jsr a_sub2
+    jsr .plot_A_on_score_row
     lda player_lives
     asl
     asl
     asl
     tax
-    ldy #40
 
+    ldy #40
 update_custom_chars_from_reversed_set
     lda #8
     sta $70
@@ -53,10 +58,10 @@ update_custom_chars_from_reversed_set
     dec $70
     bne .charset_update_loop
     lda $6f
-a_sub2  ;self-mod at +1 and +2
-    sta _SCREEN_ADDR+513  ;Memory beyound the screen memory map is used (for unexpanded Vic is the standard screen map memory)
+.plot_A_on_score_row
+    sta _SCREEN_ADDR+513  ;self-mod at +1 and +2 (which can be shadow screen address as well as normal screen address)
     inc $6f
-    inc a_sub2+1
+    inc .plot_A_on_score_row+1
     rts
 
 ;-----------------------------------------------------------------------------------
@@ -285,13 +290,14 @@ data_bullet_start_row
     !byte $00, $00, $00, $08, $00, $00, $00, $03
     !byte $00, $00, $08, $0e, $00, $00, $03, $00
 
-a_subF
-.robot_index_2
+;-----------------------------------------------------------------------------------
+;TODO: move_robots
+move_robots
     ldx #144  ;self-mod index values 144, 152, 96, 104, 112, 120, 128, 136, 144, 152, then resets to 96
     lda data_each_thing_col,x
     ora data_each_thing_row,x
     and #7
-    bne .end_routineH
+    bne .end_move_robots
     lda data_each_thing_colour,x
     cmp #yellow
     beq .robot_has_been_shot_goto_next_one
@@ -300,7 +306,7 @@ a_subF
 .robot_has_been_shot_goto_next_one
     dec $a5
     beq .skip_to_next_robot
-.end_routineH
+.end_move_robots
     rts
 
 .skip_to_next_robot
@@ -312,7 +318,7 @@ a_subF
     lda #96
 .reset_robot_index_2
     tax
-    sta .robot_index_2+1
+    sta move_robots+1
     lda data_each_thing_colour,x
     cmp #yellow
     bne .robot_still_alive_continue
@@ -321,7 +327,7 @@ a_subF
     rts
 
 .robot_still_alive_continue
-    jsr common_subZ1
+    jsr decide_if_where_robots_fire_bullets
     lda one_jiffy  ;jiffy real-time clock ($a2 is one jiffy)
     and #15
     bne .skip_nextA3
@@ -332,52 +338,52 @@ a_subF
     sta $69
 .skip_nextA3
     jsr calc_map_address_for_thing_X
-    sty $6f
+    sty $6f  ;Y equals 0 from the subroutine above
     lda $69
     and #1
     bne .skip_nextA4
     ldy #1
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 1
     ldy #23
 .skip_nextA4         
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 23 or 0
     cmp #10
     bne .skip_nextA5
     ldy #45
 .skip_nextA5
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 45
     cmp #12
     bne .skip_nextAC
     ldy #234
 .skip_nextAC
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 234
     and #2
     bne .skip_nextAD
     ldy #233
 .skip_nextAD
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 233
     and #8
     bne .skip_nextA8
     ldy #254
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 254
     ldy #21
 .skip_nextA8
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 21
     cmp #3
     bne .skip_nextA9
     ldy #43
 .skip_nextA9
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 43
     cmp #5
     bne .skip_nextAA
     ldy #232
 .skip_nextAA
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 232
     and #4
     bne .skip_nextAB
     ldy #44
 .skip_nextAB
-    jsr common_sub1
+    jsr common_sub1  ;Y equals 44
     lda $6f
     bne .top_of_loop1
     lda $69
@@ -388,6 +394,9 @@ a_subF
 
 !byte $00
 
+;-----------------------------------------------------------------------------------
+;TODO: common_sub1
+; Y input values are 0, 1, 21, 23, 43, 44, 45, 232, 233, 234, 254
 common_sub1
     lda map_address_high
     sta $64

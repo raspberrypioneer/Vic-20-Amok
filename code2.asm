@@ -1,16 +1,17 @@
-common_sub15
+;TODO: decide_where_robots_fire_bullets
+decide_where_robots_fire_bullets
     lda data_each_thing_row,x
-    bne .skip_next1
+    bne .robot_is_active_continue
     rts
 
-.skip_next1
+.robot_is_active_continue
     lda data_player_hero_row
-    bne .skip_next2
+    bne .player_is_active_continue
     rts
 
-.skip_next2
-    lda #0
-    sta $68
+.player_is_active_continue
+    lda #0  ;assume robot will fire
+    sta robot_fire_bullet_indicator
     clc
     lda data_each_thing_col,x
     ror
@@ -37,16 +38,15 @@ common_sub15
     bpl .skip_nextBA
     eor #255
 .skip_nextBA
-    cmp $70
+    cmp $70  ;values 3 or 14
     bcs .skip_nextG1
     lda $6a
-    bmi .skip_next3
+    bmi .set_A_to_13
     lda #11
-    bne .end_routineB
-.skip_next3
+    bne *+4  ;always branch, skipping next statement
+.set_A_to_13
     lda #13
-.end_routineB
-    sta $69
+    sta $69  ;A equals 11 or 13
     rts
 
 .skip_nextG1         
@@ -54,16 +54,15 @@ common_sub15
     bpl .skip_nextBB
     eor #255
 .skip_nextBB
-    cmp $70
+    cmp $70  ;values 3 or 14
     bcs .skip_nextBC
     lda $6d
-    bpl .skip_next4
+    bpl .set_A_to_14
     lda #7
-    bne .end_routineC
-.skip_next4         
+    bne *+4  ;always branch, skipping next statement
+.set_A_to_14         
     lda #14
-.end_routineC
-    sta $69
+    sta $69  ;A equals 7 or 14
     rts
 
 .skip_nextBC
@@ -81,32 +80,30 @@ common_sub15
     bpl .skip_nextBF
     eor #255
 .skip_nextBF
-    cmp $70
+    cmp $70  ;values 3 or 14
     bcc .skip_nextBG
-    lda #1
-    sta $68
+    lda #1  ;robot will not fire
+    sta robot_fire_bullet_indicator
 .skip_nextBG
     lda $6a
     bpl .skip_nextBH
     lda $6d
-    bpl .skip_next5
+    bpl .set_A_to_12
     lda #5
-    bne .end_routineD
-.skip_next5
+    bne *+4  ;always branch, skipping next statement
+.set_A_to_12
     lda #12
-.end_routineD
-    sta $69
+    sta $69  ;A equals 5 or 12
     rts
 
 .skip_nextBH
     lda $6d
-    bpl .skip_next6
+    bpl .set_A_to_10
     lda #3
-    bne .end_routineE
-.skip_next6
+    bne *+4  ;always branch, skipping next statement
+.set_A_to_10
     lda #10
-.end_routineE
-    sta $69
+    sta $69  ;A equals 3 or 10
     rts
 
 !byte $00
@@ -214,23 +211,26 @@ check_if_need_to_switch_to_next_screen
     lda #255
     rts
 
-common_subZ1
+;-----------------------------------------------------------------------------------
+;TODO: decide_if_where_robots_fire_bullets
+decide_if_where_robots_fire_bullets
     lda #3
-    sta $70
-    jsr common_sub15
-    bne .skip_nextD
-.end_routineF
+    sta $70  ;value 3
+    jsr decide_where_robots_fire_bullets
+    bne .robot_or_player_is_active_continue
+.end_robots_decide_to_fire
     rts
 
-.skip_nextD
-    lda $69
-    bne .end_routineF
+.robot_or_player_is_active_continue
+    lda $69  ;will be 3, 5, 7, 10, 11, 12, 13, 14
+    bne .end_robots_decide_to_fire
     lda #14
-    sta $70
-    jsr common_sub15
+    sta $70  ;value 14
+    jsr decide_where_robots_fire_bullets
     rts
 
-game_action_with_speed_delay
+;-----------------------------------------------------------------------------------
+handle_robots_fire_bullets
     dec game_speed
     beq .reset_game_speed
     rts
@@ -250,12 +250,12 @@ game_action_with_speed_delay
 .reset_robot_index_1
     sta .robot_index_1+1
     tax
-    jsr common_subZ1
-    beq .end_routine2
-    lda $68
-    bne .end_routine2
+    jsr decide_if_where_robots_fire_bullets
+    beq .end_robots_fire_bullets
+    lda robot_fire_bullet_indicator  ;0 is will fire, 1 will not
+    bne .end_robots_fire_bullets
     jsr fire_bullet_if_ok
-.end_routine2         
+.end_robots_fire_bullets         
     rts
 
 !byte $00
@@ -281,7 +281,7 @@ check_if_player_is_dead
 .no_more_player_lives_left
     jsr select_level
     cmp #63  ;f7 key
-    bne .end_routine3
+    bne .skip_reset_and_restart
     lda #3  ;player number of lives
     sta player_lives
     lda #0
@@ -291,7 +291,7 @@ check_if_player_is_dead
     lda game_select_level
     sta game_level
     jsr setup_robots_and_player
-.end_routine3         
+.skip_reset_and_restart         
     rts
 
 !byte $00, $00, $00, $00, $00, $00, $00
