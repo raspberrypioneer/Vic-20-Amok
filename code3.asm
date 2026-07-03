@@ -343,47 +343,47 @@ move_robots
     and #1
     bne .skip_nextA4
     ldy #1
-    jsr common_sub1  ;Y equals 1
+    jsr check_for_obstacles_next_to_robot  ;Y equals 1
     ldy #23
 .skip_nextA4         
-    jsr common_sub1  ;Y equals 23 or 0
+    jsr check_for_obstacles_next_to_robot  ;Y equals 23 or 0
     cmp #10
     bne .skip_nextA5
     ldy #45
 .skip_nextA5
-    jsr common_sub1  ;Y equals 45
+    jsr check_for_obstacles_next_to_robot  ;Y equals 45
     cmp #12
     bne .skip_nextAC
     ldy #234
 .skip_nextAC
-    jsr common_sub1  ;Y equals 234
+    jsr check_for_obstacles_next_to_robot  ;Y equals 234
     and #2
     bne .skip_nextAD
     ldy #233
 .skip_nextAD
-    jsr common_sub1  ;Y equals 233
+    jsr check_for_obstacles_next_to_robot  ;Y equals 233
     and #8
     bne .skip_nextA8
     ldy #254
-    jsr common_sub1  ;Y equals 254
+    jsr check_for_obstacles_next_to_robot  ;Y equals 254
     ldy #21
 .skip_nextA8
-    jsr common_sub1  ;Y equals 21
+    jsr check_for_obstacles_next_to_robot  ;Y equals 21
     cmp #3
     bne .skip_nextA9
     ldy #43
 .skip_nextA9
-    jsr common_sub1  ;Y equals 43
+    jsr check_for_obstacles_next_to_robot  ;Y equals 43
     cmp #5
     bne .skip_nextAA
     ldy #232
 .skip_nextAA
-    jsr common_sub1  ;Y equals 232
+    jsr check_for_obstacles_next_to_robot  ;Y equals 232
     and #4
     bne .skip_nextAB
     ldy #44
 .skip_nextAB
-    jsr common_sub1  ;Y equals 44
+    jsr check_for_obstacles_next_to_robot  ;Y equals 44
     lda $6f
     bne .top_of_loop1
     lda $69
@@ -395,9 +395,12 @@ move_robots
 !byte $00
 
 ;-----------------------------------------------------------------------------------
-;TODO: common_sub1
+; check_for_obstacles_next_to_robot
 ; Y input values are 0, 1, 21, 23, 43, 44, 45, 232, 233, 234, 254
-common_sub1
+; Y provides the direction to check relative to the map_address of the robot
+; If Y has bit 7 set (>=128), the high byte is decreased after adding Y to map_address for positions above the robot on screen
+; Otherwise the high byte is increased for positions below the robot on screen
+check_for_obstacles_next_to_robot
     lda map_address_high
     sta $64
     tya  ;Y is added to map_address_low for $63 (low) and either increasing or decreasing $64 (high), dependent on Y value bit 7
@@ -420,7 +423,7 @@ common_sub1
     lda ($63),y
     cmp #7
     bcc *+4  ;skip high byte update line below
-    inc $6f
+    inc $6f  ;obstacle found, add to obstacle count
 .Y_is_zero_so_end
     lda $69
     rts

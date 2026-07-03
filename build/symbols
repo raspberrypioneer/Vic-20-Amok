@@ -50,6 +50,7 @@
 	data_each_robot_col	= $1360
 	decide_if_where_robots_fire_bullets	= $1b40
 	player_animate_right_offset	= $38
+	handle_robot_and_bullet_actions	= $1480	; ?
 	data_step_11	= $20e8	; ?
 	data_player_hero_character	= $13ac	; unused
 	DATA_CUSTOM_CHAR	= $1800	; ?
@@ -105,14 +106,12 @@
 	USE_8k_MEMORY_LAYOUT	= $1
 	shadow_screen_high_byte	= $1e
 	data_robot_bullet	= $13b0
-	handle_actions_for_robots_and_things	= $1480	; ?
 	clear_screen_or_shadow_screen_loop	= $1244
 	yellow	= $7
 	robot_head1	= $18
 	robot_head2	= $1d
 	setup_walls	= $1400	; ?
 	update_custom_chars_from_reversed_set	= $207c	; ?
-	common_sub1	= $22b0	; ?
 	game_speed	= $a4
 	data_each_robot_character	= $1364	; unused
 	purple	= $4
@@ -120,6 +119,7 @@
 	data_entrance_gate_low	= $21a9	; ?
 	check_if_player_is_dead	= $1b80	; ?
 	game_program_loop	= $1220
+	check_for_obstacles_next_to_robot	= $22b0	; ?
 	handle_robots_fire_bullets	= $1b56	; ?
 	draw_screen_and_start_game_action	= $1240
 	data_player_start_col	= $21b8	; ?

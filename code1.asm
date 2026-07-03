@@ -138,7 +138,7 @@ clear_spaces
     jsr .draw_entrance_close_gate
 
 ;start the game action
-    jsr handle_actions_for_robots_and_things
+    jsr handle_robot_and_bullet_actions
     jsr get_user_input
     jsr check_if_player_is_dead
     jsr update_data_for_robots_and_things
@@ -312,9 +312,8 @@ setup_robots_and_player
 !byte $00, $00, $00, $00
 
 ;-----------------------------------------------------------------------------------
-;TODO: robot movements are handled but other things too - currently unsure, player, bullets, walls when hit?
-;
-handle_actions_for_robots_and_things
+;TODO: handle_robot_and_bullet_actions
+handle_robot_and_bullet_actions
     ldx #96  ;point to data_each_robot_col
 .for_X_from_96_step_8_20_times
     lda data_each_thing_row,x
