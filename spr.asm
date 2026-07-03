@@ -239,7 +239,7 @@ DATA_CUSTOM_CHAR_UNKNOWN
 !byte %00000000
 !byte %00000000
 
-DATA_CUSTOM_PLAYER_ONWARDS
+data_player_custom_characters
 ;26 player character head 1
 !byte %00000000
 !byte %00001000
@@ -300,7 +300,8 @@ DATA_CUSTOM_PLAYER_ONWARDS
 !byte %00101010
 !byte %00000000
 
-DATA_CUSTOM_CHAR_OTHER
+data_score_custom_characters
+;32 score character (is redefined when score is plotted on screen)
 !byte %00100000
 !byte %00110000
 !byte %00110000
@@ -310,6 +311,7 @@ DATA_CUSTOM_CHAR_OTHER
 !byte %00100000
 !byte %00110001
 
+;33 score character (is redefined when score is plotted on screen)
 !byte %00111001
 !byte %00000001
 !byte %00000000
@@ -319,6 +321,7 @@ DATA_CUSTOM_CHAR_OTHER
 !byte %00000000
 !byte %00000000
 
+;34 score character (is redefined when score is plotted on screen)
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -328,6 +331,7 @@ DATA_CUSTOM_CHAR_OTHER
 !byte %00000000
 !byte %00000000
 
+;35 score character (is redefined when score is plotted on screen)
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -337,6 +341,7 @@ DATA_CUSTOM_CHAR_OTHER
 !byte %00000000
 !byte %00000000
 
+;36 reverse hash
 !byte %11011011
 !byte %11011011
 !byte %00000000
@@ -346,6 +351,7 @@ DATA_CUSTOM_CHAR_OTHER
 !byte %11011011
 !byte %11011011
 
+;37 player lives (is redefined when score is plotted on screen)
 !byte %00000000
 !byte %00000000
 !byte %00000000

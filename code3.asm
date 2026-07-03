@@ -1,66 +1,74 @@
-;TODO: show_score_player_lives_on_top_row
+;-----------------------------------------------------------------------------------
 show_score_player_lives_on_top_row
-    ldy #0
+    ldy #0  ;custom character offset for score
     lda screen_or_shadow_high
     sta .plot_A_on_score_row+2  ;high byte for screen / shadow screen
     lda #32
-    sta $6f
-    lda #1
+    sta $6f  ;points to custom char to plot
+    lda #1  ;position on screen
     sta .plot_A_on_score_row+1  ;low byte for screen / shadow screen
 
+    ;plot digits of hundreds score, this is a decimal value (so a score of decimal 75 is stored as $75)
+    ;using example of $75 as the hundreds score, the 7 is converted to 56, and 5 converted to 40
+    ;which provides the X offset for the update_custom_char_and_plot_char_on_screen subroutine
     lda score_hundreds
     and #240
     lsr
     tax
-    jsr update_custom_chars_from_reversed_set
-
+    jsr update_custom_char_and_plot_char_on_screen
     lda score_hundreds
     and #15
     asl
     asl
     asl
     tax
-    jsr update_custom_chars_from_reversed_set
+    jsr update_custom_char_and_plot_char_on_screen
 
+    ;plot digits of tens score, as above for score_hundreds, this is a decimal value (so a score of decimal 75 is stored as $75)
     lda score_tens
     and #240
     lsr
     tax
-    jsr update_custom_chars_from_reversed_set
+    jsr update_custom_char_and_plot_char_on_screen
     lda score_tens
     and #15
     asl
     asl
     asl
     tax
-    jsr update_custom_chars_from_reversed_set
+    jsr update_custom_char_and_plot_char_on_screen
 
-    lda #19
+    ;plot digits of player lives, this is just a single digit value
+    lda #19  ;position on screen
     sta .plot_A_on_score_row+1  ;low byte for screen / shadow screen
-    lda #36
-    sta $6f
-    jsr .plot_A_on_score_row
+    lda #36  ;hash character
+    sta $6f  ;points to custom char to plot
+    jsr .plot_A_on_score_row  ;plot # on screen next to player lives
     lda player_lives
     asl
     asl
     asl
     tax
 
-    ldy #40
-update_custom_chars_from_reversed_set
+    ldy #40  ;custom character offset for player lives
+    ;the reversed character set digits 0 to 9 are used to redefine the characters needed for the score and player lives
+    ;unusual to redefine a character each time, perhaps used to save memory for custom characters
+update_custom_char_and_plot_char_on_screen
     lda #8
     sta $70
 .charset_update_loop
-    lda _CASEURV+384,x  ;Point to reversed charcater set
-    sta DATA_CUSTOM_CHAR_OTHER,y  ;Apply to custom character set 
+    lda _CASEURV+(48*8),x  ;point to reversed charcater set position where digits 0 to 9 are
+    sta data_score_custom_characters,y  ;apply each of the 8 bytes from custom character set 
     inx
     iny
     dec $70
     bne .charset_update_loop
-    lda $6f
+
+    ;plot the single character 
+    lda $6f  ;points to custom char to plot
 .plot_A_on_score_row
     sta _SCREEN_ADDR+513  ;self-mod at +1 and +2 (which can be shadow screen address as well as normal screen address)
-    inc $6f
+    inc $6f  ;points to custom char to plot
     inc .plot_A_on_score_row+1
     rts
 

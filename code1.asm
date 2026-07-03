@@ -442,7 +442,7 @@ animate_player_sprite
     ldx #0
 .copy_12_player_sprite_chars_loop
     lda data_player_animation,y
-    sta DATA_CUSTOM_PLAYER_ONWARDS,x
+    sta data_player_custom_characters,x
     iny
     inx
     cpx #13  ;stops at 12 characters because bottom 4 (of the 16 head + tail bytes) are always empty / blank

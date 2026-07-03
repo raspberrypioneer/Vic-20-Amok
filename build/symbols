@@ -55,7 +55,6 @@
 	data_player_hero_character	= $13ac	; unused
 	DATA_CUSTOM_CHAR	= $1800	; ?
 	data_sounds	= $2110	; ?
-	DATA_CUSTOM_PLAYER_ONWARDS	= $18d0	; ?
 	white	= $1	; unused
 	score_tens	= $75
 	setup_robots_and_player	= $141c	; ?
@@ -67,7 +66,6 @@
 	robot_tail2	= $1e	; unused
 	robot_tail1	= $19	; unused
 	data_entrance_gate_high	= $21a8	; ?
-	DATA_CUSTOM_CHAR_OTHER	= $1900
 	_KEYB_ROWS	= $9120
 	get_user_input	= $14d6	; ?
 	_COLOUR_SCREEN_ADDR	= $9400
@@ -94,6 +92,7 @@
 	data_each_robot_status	= $1362
 	add_to_score_hundreds	= $17ca	; ?
 	calc_map_address_for_thing_X	= $20d7	; ?
+	data_score_custom_characters	= $1900
 	map_address_low	= $61
 	draw_top_bottom_walls_loop	= $1262
 	show_score_player_lives_on_top_row	= $2030	; ?
@@ -111,9 +110,9 @@
 	robot_head1	= $18
 	robot_head2	= $1d
 	setup_walls	= $1400	; ?
-	update_custom_chars_from_reversed_set	= $207c	; ?
 	game_speed	= $a4
 	data_each_robot_character	= $1364	; unused
+	data_player_custom_characters	= $18d0	; ?
 	purple	= $4
 	update_data_for_robots_and_things	= $1abe	; ?
 	data_entrance_gate_low	= $21a9	; ?
@@ -123,6 +122,7 @@
 	handle_robots_fire_bullets	= $1b56	; ?
 	draw_screen_and_start_game_action	= $1240
 	data_player_start_col	= $21b8	; ?
+	update_custom_char_and_plot_char_on_screen	= $207c	; ?
 	screen_high_byte	= $1c
 	cyan	= $3
 	data_inner_walls	= $1320
