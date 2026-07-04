@@ -138,7 +138,7 @@ clear_spaces
     jsr .draw_entrance_close_gate
 
 ;start the game action
-    jsr handle_robot_and_bullet_actions
+    jsr handle_robot_player_and_bullets
     jsr get_user_input
     jsr check_if_player_is_dead
     jsr update_data_for_robots_and_things
@@ -312,48 +312,49 @@ setup_robots_and_player
 !byte $00, $00, $00, $00
 
 ;-----------------------------------------------------------------------------------
-;TODO: handle_robot_and_bullet_actions
-handle_robot_and_bullet_actions
+handle_robot_player_and_bullets
+
     ldx #96  ;point to data_each_robot_col
 .for_X_from_96_step_8_20_times
     lda data_each_thing_row,x
     beq .skip_to_next_robot_or_thing
-    cpx #player_data_index  ;after robots, deal with player and other things
-    bcs .do_bullet_actions
+    cpx #player_data_index  ;after robots, deal with player and bullets
+    bcs .handle_player_and_bullets
     and #7
-    bne .do_bullet_actions
+    bne .handle_player_and_bullets
 
+    ;plot robot character
     lda data_each_thing_row,x
     lsr
     lsr
     lsr
-    tay  ;Y input for calculate map address
+    tay  ;Y input for calculate map address (row)
 
     lda data_each_thing_col,x
     and #7
-    bne .do_bullet_actions
+    bne .handle_player_and_bullets
     lda data_each_thing_col,x
     lsr
     lsr
-    lsr
+    lsr  ;A at this point is ready to calculate map address (col)
     jsr calc_map_address_using_A_for_col_and_Y_for_row
 
-    ;plot robot or player head and tail characters
-    lda data_each_thing_character,x  ;with X is data_each_robot_character or data_player_hero_character
+    ;plot robot head and tail characters
+    lda data_each_thing_character,x  ;with X is data_each_robot_character
     sta (map_address_low),y
     ldy #22  ;row below
     clc
     adc #1  ;is tail character (+1 from head)
     sta (map_address_low),y
 
-    ;plot robot or player colour
+    ;plot robot colour
     lda map_address_low
     sta $63  ;colour map low
     lda map_address_high
     clc
     adc #screen_colour_map_offset
     sta $64  ;colour map high
-    lda data_each_thing_colour,x  ;is data_each_robot_colour or data_player_hero_colour
+    lda data_each_thing_colour,x
     ldy #0
     sta ($63),y
     ldy #22  ;row below
@@ -367,8 +368,8 @@ handle_robot_and_bullet_actions
     bne .for_X_from_96_step_8_20_times
     rts
 
-.do_bullet_actions
-    jsr move_bullets
+.handle_player_and_bullets
+    jsr plot_player_and_bullets
     jmp .skip_to_next_robot_or_thing
 
 ;-----------------------------------------------------------------------------------
@@ -569,10 +570,11 @@ fire_bullet_if_ok
 !byte $00
 
 ;-----------------------------------------------------------------------------------
-;TODO: move_bullets
-move_bullets
+;TODO: plot_player_and_bullets
+plot_player_and_bullets
+
     jsr calc_map_address_for_thing_X
-    lda data_each_thing_character,x  ;with X is data_for_bullets_character
+    lda data_each_thing_character,x
     asl
     asl
     asl
@@ -580,13 +582,13 @@ move_bullets
     lda #0
     adc #24
     sta .data_custom_char_high_byte+2
-    cpx #176
-    bcc .skip_nextAJ
+
+    cpx #player_data_index+8  ;is X a bullet index?
+    bcc .X_index_is_player
     lda #8
-    bne .skip_nextAI
-.skip_nextAJ
+    bne *+4  ;skip next instruction
+.X_index_is_player
     lda #48
-.skip_nextAI
     sta $69
     lda data_each_thing_col+7,x
     sta $6a
@@ -670,14 +672,14 @@ move_bullets
     sta colour_address_high
     lda map_address_low
     sta colour_address_low
-    jsr move_bullet
-    cpx #176
-    bcc .skip_nextZ
+    jsr animate_player_or_bullet
+    cpx #player_data_index+8  ;is X a bullet index?
+    bcc .X_is_robot_or_player
     rts
 
-.skip_nextZ
-    jsr move_bullet
-    jsr move_bullet
+.X_is_robot_or_player
+    jsr animate_player_or_bullet
+    jsr animate_player_or_bullet
     jsr calc_map_address_for_thing_X
     inc map_address_low
     lda map_address_low
@@ -688,9 +690,9 @@ move_bullets
     clc
     adc #screen_colour_map_offset
     sta colour_address_high
-    jsr move_bullet
-    jsr move_bullet
-    jsr move_bullet
+    jsr animate_player_or_bullet
+    jsr animate_player_or_bullet
+    jsr animate_player_or_bullet
     rts
 
 ;-----------------------------------------------------------------------------------
@@ -731,8 +733,8 @@ add_100_to_score_change_level_reset_next_screen_value
     rts
 
 ;-----------------------------------------------------------------------------------
-;TODO: move_bullet
-move_bullet         
+;TODO: animate_player_or_bullet
+animate_player_or_bullet
     ldy #0
     sty $6e
     sty $6f
@@ -789,12 +791,12 @@ move_bullet
 
 .skip_nextAP
     lda data_each_thing_colour,x
-    cmp #yellow
-    bne .skip_nextAQ
-.end_routine5
+    cmp #yellow  ;the wall, a player or robot turns yellow when hit
+    bne .bullet_has_not_hit_anything
+.end_bullet_movement
     rts
 
-.skip_nextAQ
+.bullet_has_not_hit_anything
     lda #247
     sta $00ad  ;location re-used for storage, see MTV page 49
     txa
@@ -811,7 +813,7 @@ move_bullet
     ldy #0
     lda ($65),y
     cmp #255
-    beq .end_routine5
+    beq .end_bullet_movement
 
 ;check if bullet hits a robot
     ldy #96  ;index for start of robot data
@@ -877,7 +879,7 @@ add_to_score_hundreds
     clc
     adc #8
     tay
-    cpy #176  ;index of last robot reached
+    cpy #player_data_index+8  ;Y is after the player index (start of bullets)
     bne .check_bullet_hit_robot_loop
     rts
 

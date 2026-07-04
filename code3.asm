@@ -116,12 +116,12 @@ calc_map_address_for_thing_X
     lsr
     lsr
     lsr
-    tay  ;Y input for calculate map address
+    tay  ;Y input for calculate map address (row)
 
     lda data_each_thing_col,x
     lsr
     lsr
-    lsr
+    lsr  ;A at this point is ready to calculate map address (col)
     jsr calc_map_address_using_A_for_col_and_Y_for_row
     rts
 
@@ -356,19 +356,16 @@ move_robots
 .skip_nextA4         
     jsr check_for_obstacles_next_to_robot  ;Y equals 23 or 0
     cmp #10
-    bne .skip_nextA5
+    bne *+4  ;skip next instruction
     ldy #45
-.skip_nextA5
     jsr check_for_obstacles_next_to_robot  ;Y equals 45
     cmp #12
-    bne .skip_nextAC
+    bne *+4  ;skip next instruction
     ldy #234
-.skip_nextAC
     jsr check_for_obstacles_next_to_robot  ;Y equals 234
     and #2
-    bne .skip_nextAD
+    bne *+4  ;skip next instruction
     ldy #233
-.skip_nextAD
     jsr check_for_obstacles_next_to_robot  ;Y equals 233
     and #8
     bne .skip_nextA8
@@ -378,19 +375,16 @@ move_robots
 .skip_nextA8
     jsr check_for_obstacles_next_to_robot  ;Y equals 21
     cmp #3
-    bne .skip_nextA9
+    bne *+4  ;skip next instruction
     ldy #43
-.skip_nextA9
     jsr check_for_obstacles_next_to_robot  ;Y equals 43
     cmp #5
-    bne .skip_nextAA
+    bne *+4  ;skip next instruction
     ldy #232
-.skip_nextAA
     jsr check_for_obstacles_next_to_robot  ;Y equals 232
     and #4
-    bne .skip_nextAB
+    bne *+4  ;skip next instruction
     ldy #44
-.skip_nextAB
     jsr check_for_obstacles_next_to_robot  ;Y equals 44
     lda $6f
     bne .top_of_loop1

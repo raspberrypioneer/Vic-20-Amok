@@ -21,7 +21,6 @@
 	prepare_screen_and_start_game_action	= $1bbb	; ?
 	data_each_thing_row	= $1301	; ?
 	screen_or_shadow_high	= $60
-	move_bullet	= $16fe	; ?
 	_SOUND3	= $900c
 	_JOYSTICK	= $9111
 	colour_address_low	= $67
@@ -34,6 +33,7 @@
 	game_level	= $77
 	data_bullet_start_row	= $21f0	; ?
 	player_head1	= $1a
+	plot_player_and_bullets	= $1600	; ?
 	score_hundreds	= $74
 	gate_character	= $1f
 	fire_bullet_if_ok	= $15d8
@@ -50,7 +50,6 @@
 	data_each_robot_col	= $1360
 	decide_if_where_robots_fire_bullets	= $1b40
 	player_animate_right_offset	= $38
-	handle_robot_and_bullet_actions	= $1480	; ?
 	data_step_11	= $20e8	; ?
 	data_player_hero_character	= $13ac	; unused
 	DATA_CUSTOM_CHAR	= $1800	; ?
@@ -66,6 +65,8 @@
 	robot_tail2	= $1e	; unused
 	robot_tail1	= $19	; unused
 	data_entrance_gate_high	= $21a8	; ?
+	animate_player_or_bullet	= $16fe	; ?
+	handle_robot_player_and_bullets	= $1480	; ?
 	_KEYB_ROWS	= $9120
 	get_user_input	= $14d6	; ?
 	_COLOUR_SCREEN_ADDR	= $9400
@@ -126,7 +127,6 @@
 	screen_high_byte	= $1c
 	cyan	= $3
 	data_inner_walls	= $1320
-	move_bullets	= $1600	; ?
 	end_of_program	= $230b	; unused
 	next_screen_offset	= $71
 	_VICCR2	= $9002

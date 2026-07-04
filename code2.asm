@@ -1,3 +1,4 @@
+;-----------------------------------------------------------------------------------
 ;TODO: decide_where_robots_fire_bullets
 decide_where_robots_fire_bullets
     lda data_each_thing_row,x
@@ -51,9 +52,8 @@ decide_where_robots_fire_bullets
 
 .skip_nextG1         
     lda $6a
-    bpl .skip_nextBB
+    bpl *+4  ;skip next instruction
     eor #255
-.skip_nextBB
     cmp $70  ;values 3 or 14
     bcs .skip_nextBC
     lda $6d
@@ -67,19 +67,16 @@ decide_where_robots_fire_bullets
 
 .skip_nextBC
     lda $6d
-    bpl .skip_nextBD
+    bpl *+4  ;skip next instruction
     eor #255
-.skip_nextBD
     sta $6f
     lda $6a
-    bpl .skip_nextBE
+    bpl *+4  ;skip next instruction
     eor #255
-.skip_nextBE
     sec
     sbc $6f
-    bpl .skip_nextBF
+    bpl *+4  ;skip next instruction
     eor #255
-.skip_nextBF
     cmp $70  ;values 3 or 14
     bcc .skip_nextBG
     lda #1  ;robot will not fire
