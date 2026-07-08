@@ -47,7 +47,7 @@ decide_where_robots_fire_bullets
     bne *+4  ;always branch, skipping next statement
 .set_A_to_13
     lda #13
-    sta $69  ;A equals 11 or 13
+    sta robot_direction_finder  ;A equals 11 or 13
     rts
 
 .skip_nextG1         
@@ -62,7 +62,7 @@ decide_where_robots_fire_bullets
     bne *+4  ;always branch, skipping next statement
 .set_A_to_14         
     lda #14
-    sta $69  ;A equals 7 or 14
+    sta robot_direction_finder  ;A equals 7 or 14
     rts
 
 .skip_nextBC
@@ -90,7 +90,7 @@ decide_where_robots_fire_bullets
     bne *+4  ;always branch, skipping next statement
 .set_A_to_12
     lda #12
-    sta $69  ;A equals 5 or 12
+    sta robot_direction_finder  ;A equals 5 or 12
     rts
 
 .skip_nextBH
@@ -100,7 +100,7 @@ decide_where_robots_fire_bullets
     bne *+4  ;always branch, skipping next statement
 .set_A_to_10
     lda #10
-    sta $69  ;A equals 3 or 10
+    sta robot_direction_finder  ;A equals 3 or 10
     rts
 
 !byte $00
@@ -219,7 +219,7 @@ decide_if_where_robots_fire_bullets
     rts
 
 .robot_or_player_is_active_continue
-    lda $69  ;will be 3, 5, 7, 10, 11, 12, 13, 14
+    lda robot_direction_finder  ;will be 3, 5, 7, 10, 11, 12, 13, 14
     bne .end_robots_decide_to_fire
     lda #14
     sta $70  ;value 14

@@ -1,6 +1,7 @@
-;DATA_CUSTOM_CHAR = $1800 to $1930 (6144 to 6448)
+;Data = $1800 to $1930 (6144 to 6448)
 ;38 x 8 = 304 bytes
-DATA_CUSTOM_CHAR
+data_custom_characters
+;0 blank character
 !byte %00000000
 !byte %00000000
 !byte %00000000

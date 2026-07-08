@@ -26,6 +26,8 @@ colour_address_low = $67  ;colour map low
 colour_address_high = $68  ;colour map high
 robot_fire_bullet_indicator = $68  ;[reused] 0 is will fire, 1 will not
 key_press = $69  ;key / joystick directions and fire
+robot_direction_finder = $69  ;pointer to next robot direction
+obstacle_count = $6f  ;count of obstacles next to robot to determine movement direction
 next_screen_offset = $71  ;used to point to the next screen
 entrance_gate_position = $72  ;values are 0,1,2,3,255
 play_sound_duration = $73
@@ -36,6 +38,7 @@ game_level = $77
 game_select_level = $78
 one_jiffy = $a2
 game_speed = $a4  ;is a delay which depends on the level and screen (higher values are slower)
+robot_speed = $a5  ;robot movement speed
 
 ;-----------------------------------------------------------------------------------
 ;Colours

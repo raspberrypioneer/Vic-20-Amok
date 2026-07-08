@@ -78,7 +78,7 @@ screen_transition
     sta data_player_hero_colour
     lda #112
     sta game_speed
-    sta $a5
+    sta robot_speed
     sta _SOUND3
     sta _NOISE
     lda #8  ;black background and border
@@ -304,7 +304,7 @@ move_robots
     ldx #144  ;self-mod index values 144, 152, 96, 104, 112, 120, 128, 136, 144, 152, then resets to 96
     lda data_each_thing_col,x
     ora data_each_thing_row,x
-    and #7
+    and #%00000111  ;7
     bne .end_move_robots
     lda data_each_thing_colour,x
     cmp #yellow
@@ -312,7 +312,7 @@ move_robots
     lda #0
     sta data_each_thing_status,x
 .robot_has_been_shot_goto_next_one
-    dec $a5
+    dec robot_speed
     beq .skip_to_next_robot
 .end_move_robots
     rts
@@ -322,76 +322,77 @@ move_robots
     clc
     adc #8
     cmp #160
-    bne .reset_robot_index_2
+    bne *+4  ;skip next instruction
     lda #96
-.reset_robot_index_2
     tax
     sta move_robots+1
     lda data_each_thing_colour,x
     cmp #yellow
     bne .robot_still_alive_continue
     lda game_level
-    sta $a5
+    sta robot_speed
     rts
 
 .robot_still_alive_continue
-    jsr decide_if_where_robots_fire_bullets
+    jsr decide_if_where_robots_fire_bullets  ;robot_direction_finder will be 3, 5, 7, 10, 11, 12, 13, 14
     lda one_jiffy  ;jiffy real-time clock ($a2 is one jiffy)
     and #15
-    bne .skip_nextA3
-.top_of_loop1
+    bne .start_with_previous_direction_finder
+
+.obstacle_found_loop
     inc $a7
     lda $a7
     and #15
-    sta $69
-.skip_nextA3
+    sta robot_direction_finder
+.start_with_previous_direction_finder
     jsr calc_map_address_for_thing_X
-    sty $6f  ;Y equals 0 from the subroutine above
-    lda $69
-    and #1
-    bne .skip_nextA4
+    sty obstacle_count  ;Y equals 0 from the subroutine above
+    lda robot_direction_finder
+    and #%00000001  ;1
+    bne .skip_direction_check1
     ldy #1
     jsr check_for_obstacles_next_to_robot  ;Y equals 1
     ldy #23
-.skip_nextA4         
+.skip_direction_check1         
     jsr check_for_obstacles_next_to_robot  ;Y equals 23 or 0
-    cmp #10
+    cmp #%00001010  ;10
     bne *+4  ;skip next instruction
     ldy #45
     jsr check_for_obstacles_next_to_robot  ;Y equals 45
-    cmp #12
+    cmp #%00001100  ;12
     bne *+4  ;skip next instruction
     ldy #234
     jsr check_for_obstacles_next_to_robot  ;Y equals 234
-    and #2
+    and #%00000010  ;2
     bne *+4  ;skip next instruction
     ldy #233
     jsr check_for_obstacles_next_to_robot  ;Y equals 233
-    and #8
-    bne .skip_nextA8
+    and #%00001000  ;8
+    bne .skip_direction_check2
     ldy #254
     jsr check_for_obstacles_next_to_robot  ;Y equals 254
     ldy #21
-.skip_nextA8
+.skip_direction_check2
     jsr check_for_obstacles_next_to_robot  ;Y equals 21
-    cmp #3
+    cmp #%00000011  ;3
     bne *+4  ;skip next instruction
     ldy #43
     jsr check_for_obstacles_next_to_robot  ;Y equals 43
-    cmp #5
+    cmp #%00000101  ;5
     bne *+4  ;skip next instruction
     ldy #232
     jsr check_for_obstacles_next_to_robot  ;Y equals 232
-    and #4
+    and #%00000100  ;4
     bne *+4  ;skip next instruction
     ldy #44
     jsr check_for_obstacles_next_to_robot  ;Y equals 44
-    lda $6f
-    bne .top_of_loop1
-    lda $69
-    sta data_each_thing_status,x
+    lda obstacle_count
+    bne .obstacle_found_loop  ;one or more obstacles found, try finding a direction again
+
+    lda robot_direction_finder
+    sta data_each_thing_status,x  ;becomes Y pointer to data_robot_move_col used in update_data_for_robots_and_things
     lda game_level
-    sta $a5
+    sta robot_speed
     rts
 
 !byte $00
@@ -425,9 +426,9 @@ check_for_obstacles_next_to_robot
     lda ($63),y
     cmp #7
     bcc *+4  ;skip high byte update line below
-    inc $6f  ;obstacle found, add to obstacle count
+    inc obstacle_count  ;obstacle found, add to obstacle count
 .Y_is_zero_so_end
-    lda $69
+    lda robot_direction_finder
     rts
 
 ;-----------------------------------------------------------------------------------

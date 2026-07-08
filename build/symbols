@@ -3,6 +3,7 @@
 	_VOLUME	= $900e
 	check_if_need_to_switch_to_next_screen	= $1b00	; ?
 	data_each_thing_status	= $1302	; ?
+	robot_speed	= $a5
 	_CASEURV	= $8400
 	screen_colour_map_offset	= $78
 	extras_8k	= $2300	; ?
@@ -34,6 +35,7 @@
 	data_bullet_start_row	= $21f0	; ?
 	player_head1	= $1a
 	plot_player_and_bullets	= $1600	; ?
+	data_custom_characters	= $1800	; ?
 	score_hundreds	= $74
 	gate_character	= $1f
 	fire_bullet_if_ok	= $15d8
@@ -52,7 +54,6 @@
 	player_animate_right_offset	= $38
 	data_step_11	= $20e8	; ?
 	data_player_hero_character	= $13ac	; unused
-	DATA_CUSTOM_CHAR	= $1800	; ?
 	data_sounds	= $2110	; ?
 	white	= $1	; unused
 	score_tens	= $75
@@ -60,6 +61,7 @@
 	robot_fire_bullet_indicator	= $68
 	add_100_to_score_change_level_reset_next_screen_value	= $16ec
 	one_jiffy	= $a2
+	robot_direction_finder	= $69
 	blue	= $6
 	extras_8k_done	= $121b
 	robot_tail2	= $1e	; unused
@@ -71,6 +73,7 @@
 	get_user_input	= $14d6	; ?
 	_COLOUR_SCREEN_ADDR	= $9400
 	player_animate_up_down_offset	= $50
+	obstacle_count	= $6f
 	data_for_bullets_character	= $1354	; unused
 	end_code2	= $1c00	; unused
 	end_code3	= $2300	; unused

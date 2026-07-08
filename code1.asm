@@ -211,7 +211,7 @@ data_player_hero_col
 data_player_hero_row = data_player_hero_col+1
 data_player_hero_colour = data_player_hero_col+3
 data_player_hero_character = data_player_hero_col+4
-    !byte $60, $20, $00, purple, player_head1, $02, $10, $10
+    !byte $60, $20, $00, purple, player_head1, $02, $10, $10  ;player data from position 168
 
 data_robot_bullet
     !byte $00, $00, $00, red, bullet_character, $01, $70, $08
@@ -583,13 +583,13 @@ plot_player_and_bullets
     adc #24
     sta .data_custom_char_high_byte+2
 
-    cpx #player_data_index+8  ;is X a bullet index?
+    cpx #player_data_index+8  ;is X a bullet index (player index + 8)?
     bcc .X_index_is_player
-    lda #8
+    lda #8  ;bullet
     bne *+4  ;skip next instruction
 .X_index_is_player
-    lda #48
-    sta $69
+    lda #48  ;player
+    sta $69  ;custom char index 8 = bullet, 48 = player
     lda data_each_thing_col+7,x
     sta $6a
     lda data_each_thing_col,x
@@ -604,11 +604,12 @@ plot_player_and_bullets
     lda data_each_thing_col+6,x
     tax
 
-    lda #0
+    ;blank custom characters from bullet or player (downwards)
+    lda #0  ;blank character
 .clear_data_custom_char_in_X_loop
-    sta DATA_CUSTOM_CHAR,x
+    sta data_custom_characters,x
     inx
-    dec $69
+    dec $69  ;custom char index 8 = bullet, 48 = player
     bne .clear_data_custom_char_in_X_loop
 
     ldx $6c
@@ -621,21 +622,15 @@ plot_player_and_bullets
     lda #0
     sta $6b
 .data_custom_char_high_byte
-    lda DATA_CUSTOM_CHAR,y  ;self-mod (high byte)
+    lda data_custom_characters,y  ;self-mod (high byte)
     beq .skip_nextX
 .jmp_to_low_byte
-    jmp .jmp_table  ;self-mod (low byte)
+    jmp .bit_shift_right_jump_table  ;self-mod (low byte)
 
-    lsr
+    lsr  ;shift character bit to the right (bit 7 becomes 0, carry is previous bit 0)
     nop
-    ror $6b
-.jmp_table
-    lsr
-    nop
-    ror $6b
-    lsr
-    nop
-    ror $6b
+    ror $6b  ;shift to the right with bit 7 populated with the carry value from above
+.bit_shift_right_jump_table
     lsr
     nop
     ror $6b
@@ -648,7 +643,13 @@ plot_player_and_bullets
     lsr
     nop
     ror $6b
-    sta DATA_CUSTOM_CHAR,x
+    lsr
+    nop
+    ror $6b
+    lsr
+    nop
+    ror $6b
+    sta data_custom_characters,x
     cpx #111
     bcs .skip_nextX
     nop
