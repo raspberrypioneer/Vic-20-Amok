@@ -1,7 +1,10 @@
-;Data = $1800 to $1930 (6144 to 6448)
-;38 x 8 = 304 bytes
+;--------------------------------------------------------------------------------------------------
+; VIC custom-character data at $1800-$192f: 38 characters, eight bytes each.
+;
+; Static characters are followed by runtime workspaces used for shifted software sprites and by the
+; six score/lives characters immediately before code3 in the original memory layout.
 data_custom_characters
-;0 blank character
+; Character 0: blank.
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -11,7 +14,7 @@ data_custom_characters
 !byte %00000000
 !byte %00000000
 
-;1 bullet character
+; Character 1: bullet source bitmap.
 !byte %10000000
 !byte %00000000
 !byte %00000000
@@ -30,7 +33,9 @@ data_custom_characters
 !byte %00100100
 !byte %00100100
 
-DATA_CUSTOM_CHAR_UNKNOWN
+; Adding an object's primary workspace offset to this address reaches the corresponding right-hand
+; column, 24 bytes (three characters) beyond its left-hand dynamic-character column.
+data_custom_characters_right_column
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -220,7 +225,7 @@ DATA_CUSTOM_CHAR_UNKNOWN
 !byte %00000000
 !byte %00000000
 
-;24 robot character head 1
+; Character 24: robot head, design 1.
 !byte %00000000
 !byte %00011000
 !byte %00111100
@@ -230,7 +235,7 @@ DATA_CUSTOM_CHAR_UNKNOWN
 !byte %11111111
 !byte %10111101
 
-;25 robot character tail 1
+; Character 25: robot body, design 1.
 !byte %10111101
 !byte %10111101
 !byte %00111100
@@ -241,7 +246,7 @@ DATA_CUSTOM_CHAR_UNKNOWN
 !byte %00000000
 
 data_player_custom_characters
-;26 player character head 1
+; Character 26: player head.
 !byte %00000000
 !byte %00001000
 !byte %00011100
@@ -251,7 +256,7 @@ data_player_custom_characters
 !byte %00101010
 !byte %00001000
 
-;27 player character tail 1
+; Character 27: player body.
 !byte %00010100
 !byte %00010100
 !byte %00010100
@@ -261,7 +266,7 @@ data_player_custom_characters
 !byte %00000000
 !byte %00000000
 
-;28 block character used for walls
+; Character 28: wall block.
 !byte %11111111
 !byte %11111111
 !byte %11111111
@@ -271,7 +276,7 @@ data_player_custom_characters
 !byte %11111111
 !byte %11111111
 
-;29 robot character head 2
+; Character 29: robot head, design 2.
 !byte %00000000
 !byte %00011000
 !byte %00111100
@@ -281,7 +286,7 @@ data_player_custom_characters
 !byte %11111111
 !byte %10111101
 
-;30 robot character tail 2
+; Character 30: robot body, design 2.
 !byte %10111101
 !byte %10111101
 !byte %00111100
@@ -291,7 +296,7 @@ data_player_custom_characters
 !byte %00000000
 !byte %00000000
 
-;31 gate character used for blocking entrance
+; Character 31: entrance gate.
 !byte %00000000
 !byte %01010100
 !byte %00101010
@@ -302,7 +307,7 @@ data_player_custom_characters
 !byte %00000000
 
 data_score_custom_characters
-;32 score character (is redefined when score is plotted on screen)
+; Characters 32-35: four score-digit workspaces, redefined every frame from the VIC character ROM.
 !byte %00100000
 !byte %00110000
 !byte %00110000
@@ -312,7 +317,7 @@ data_score_custom_characters
 !byte %00100000
 !byte %00110001
 
-;33 score character (is redefined when score is plotted on screen)
+; Character 33: score-digit workspace.
 !byte %00111001
 !byte %00000001
 !byte %00000000
@@ -322,7 +327,7 @@ data_score_custom_characters
 !byte %00000000
 !byte %00000000
 
-;34 score character (is redefined when score is plotted on screen)
+; Character 34: score-digit workspace.
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -332,7 +337,7 @@ data_score_custom_characters
 !byte %00000000
 !byte %00000000
 
-;35 score character (is redefined when score is plotted on screen)
+; Character 35: score-digit workspace.
 !byte %00000000
 !byte %00000000
 !byte %00000000
@@ -342,7 +347,7 @@ data_score_custom_characters
 !byte %00000000
 !byte %00000000
 
-;36 reverse hash
+; Character 36: fixed reverse-video `#` lives marker.
 !byte %11011011
 !byte %11011011
 !byte %00000000
@@ -352,7 +357,7 @@ data_score_custom_characters
 !byte %11011011
 !byte %11011011
 
-;37 player lives (is redefined when score is plotted on screen)
+; Character 37: lives-digit workspace, redefined every frame from the VIC character ROM.
 !byte %00000000
 !byte %00000000
 !byte %00000000

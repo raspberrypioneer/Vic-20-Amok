@@ -1,8 +1,9 @@
-;_SCREEN_ADDR = $1c00 to $1e01 (7168 to 7681)
-;64 x 8 = 512 + 1 bytes
-;The title screen text is already in screen memory on program load and is only displayed once
-;The screen then gets used for the game display
+;--------------------------------------------------------------------------------------------------
+; Preloaded title-screen codes. The title is displayed once at startup; its memory subsequently
+; becomes the first of the two game screen buffers.
+
 _SCREEN_ADDR
+
 !scr "        amok!         "
 !scr "                      "
 !scr "    copyright 1981    "

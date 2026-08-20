@@ -9,6 +9,9 @@ Amend `a_run.bat` by commenting / uncommenting the command to run either the une
 
 ![Screen 1](./docs/Amok%20screen1.png)
 
+This disassembly was started as a learning exercise, with notes on the fairly clunky approach below.
+Most of the disassembly was completed by hand but finished off with AI (VS Code and Codex / ChatGPT).
+
 ## Disassembly notes
 1. Go to https://www.masswerk.at/6502/disassembler.html
 2. Choose load option to load PRG file
@@ -41,7 +44,7 @@ l100e         lda #22
 10. Perform a byte-compare of the compiled PRG result against the original PRG (Notepadd++ does this). They should completely match.
 11. The translation of the assembler is next, aimed at understanding what the code does. A good resource for system memory addresses is COMPUTE! Mapping the VIC (MTV).
 12. Repeat the byte-compare of the compiled PRG result against the original PRG at various milestones.
-13. Ensure big sections of data are labelled (add own labels where neded), they may indicate redefined custom characters at addresses like `$1800`,`$C000` (see MTV page 130). Check the `symbols` file generated after compilation for this.
+13. Ensure big sections of data are labelled (add own labels where needed), they may indicate redefined custom characters at addresses like `$1800`,`$C000` (see MTV page 130). Check the `symbols` file generated after compilation for this.
 14. It can be worth reformatting hex absolute values e.g. `#$3f` to it's decimal equivalent, `#63` in this case. All $-values in code (not data) are memory addresses.
 15. Searching for `lda $----,x`, `sta $----,x`, `inc $----,y` etc often points to references to bytes in data blocks.
 16. Also search for `lda $----`, `sta $----`, and the same for `x` and `y` registers
