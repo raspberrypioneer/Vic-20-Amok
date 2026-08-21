@@ -1,9 +1,14 @@
-# Amok for the Commodore Vic20
-Amok game disassembly with build scripts for reassembly for the unexpanded and 8K+ expanded Vic20.
+# Amok for the Commodore VIC-20
+Amok game disassembly with build scripts for reassembly for the unexpanded and 8K+ expanded VIC-20.
 
-The 8K+ expanded version is the same as the unexpanded version except it works in the 8K+ expanded memory configuration.
+The 8K+ expanded version is the same as the unexpanded version except that it works in the 8K+
+expanded memory configuration.
 
-Amend `a_run.bat` by commenting / uncommenting the command to run either the unexpanded or 8K+ expanded version.
+See [Technical analysis](docs/technical-analysis.md) for the program structure, memory maps, rendering
+architecture, game systems, special techniques and preserved original anomalies.
+
+Amend `a_run.bat` by commenting or uncommenting the command for the unexpanded or 8K+ expanded
+version.
 
 ![Amok](./docs/Amok-image.jpg)
 
